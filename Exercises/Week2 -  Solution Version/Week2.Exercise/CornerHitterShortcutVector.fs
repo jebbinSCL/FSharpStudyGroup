@@ -1,4 +1,4 @@
-﻿module Exercise
+﻿module CornerHitterShortcutVector
 
 open System.Drawing
 open System
@@ -12,7 +12,7 @@ type GenerationData = {
 }
 
 let getChildren angle magnitudeChangeFactor (branch : VectorLine)= 
-    let baseChildVector = {branch with StartPoint = (convertVectorToLine branch).EndPoint}
+    let baseChildVector = {branch with StartPoint = (convertVectorToLine branch).EndPoint; UnitVector={X=0.0;Y= -1.0;}}
     let childOne = rotateVector baseChildVector angle 
     let childTwo = rotateVector baseChildVector -angle
     seq {
@@ -25,9 +25,10 @@ let getChildGeneration (genData : GenerationData) = genData.CurrentGen |> Seq.co
 let generateTreeFromTrunk startState = 
     seq {
         yield startState.CurrentGen
-        let nextGenerationBranches = startState |> Seq.unfold (fun state -> 
+        let unfolder (state : GenerationData) =
             let nextGen = getChildGeneration state
-            Some(nextGen,{state with CurrentGen=nextGen; Angle = state.Angle + state.AngleChangeByValue}) )
+            Some(nextGen,{state with CurrentGen=nextGen; Angle = state.Angle + state.AngleChangeByValue})
+        let nextGenerationBranches = startState |> Seq.unfold (unfolder)
         yield! nextGenerationBranches 
     }
 
@@ -43,10 +44,10 @@ let drawAndSaveFractalTree (width : int) (height : int) =
 
     let branchLength = 100
     let depth = 15
-    let angle = 15.0<degree>
+    let angle = 44.4<degree>
 
     let trunk : PointLine = { StartPoint= {X= (float width) / 2.0; Y = float height} ; EndPoint = {X=(float width)/2.0; Y=float (height - branchLength)} }
-    let startState = {CurrentGen = seq {yield convertLineToVector trunk}; MagnitudeChangeFactor=0.9; Angle = angle; AngleChangeByValue = 0.0<degree> / float depth}
+    let startState = {CurrentGen = seq {yield convertLineToVector trunk}; MagnitudeChangeFactor=1.0; Angle = angle; AngleChangeByValue = 0.0<degree> / float depth}
 
     let bmp = new Bitmap(width,height)
     let pen = new Pen(Color.LimeGreen, 3.0f)
@@ -60,7 +61,4 @@ let drawAndSaveFractalTree (width : int) (height : int) =
     generateTreeFromTrunk startState |> Seq.take depth |> Seq.concat |> Seq.iter drawVector'
 
     bmp.Save("..\\..\\FractalTree.jpeg")
-
-            
-    
 

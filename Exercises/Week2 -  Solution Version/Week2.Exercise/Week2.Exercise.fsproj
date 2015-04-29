@@ -51,8 +51,9 @@
     <Compile Include="README.fs" />
     <Compile Include="Helpers.fs" />
     <Compile Include="Exercise.fs" />
-    <Compile Include="Program.fs" />
+    <Compile Include="CornerHitterShortcutVector.fs" />
     <None Include="App.config" />
+    <Compile Include="Program.fs" />
   </ItemGroup>
   <PropertyGroup>
     <MinimumVisualStudioVersion Condition="'$(MinimumVisualStudioVersion)' == ''">11</MinimumVisualStudioVersion>
